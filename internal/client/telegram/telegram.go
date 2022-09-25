@@ -40,7 +40,7 @@ func (c *client) SendMessage(msg *telegram.Message) error {
 }
 
 func (c *client) GetUpdates() (map[int64][]*telegram.Message, error) {
-	fmt.Println("GetUpdates runnning...")
+	fmt.Println("GetUpdates running...")
 	ret := make(map[int64][]*telegram.Message)
 	u := tgbotapi.NewUpdate(c.offset)
 	updates, err := c.bot.GetUpdatesChan(u)
