@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"personhood-proof/internal/client/cdn"
+	"personhood-proof/internal/client/telegram"
 	"personhood-proof/internal/repository/user"
 	"time"
 
@@ -13,13 +14,15 @@ import (
 type PersonhoodProofService struct {
 	db       *sqlx.DB
 	cdn      cdn.Client
+	tg       telegram.Client
 	userRepo *user.UserRepository
 }
 
-func NewPersonhoodProofService(db *sqlx.DB, cdn cdn.Client, userRepo *user.UserRepository) *PersonhoodProofService {
+func NewPersonhoodProofService(db *sqlx.DB, cdn cdn.Client, tg telegram.Client, userRepo *user.UserRepository) *PersonhoodProofService {
 	return &PersonhoodProofService{
 		db:       db,
 		cdn:      cdn,
+		tg:       tg,
 		userRepo: userRepo,
 	}
 }
@@ -40,6 +43,9 @@ func (pp *PersonhoodProofService) Start(ctx context.Context, interval time.Durat
 }
 
 func (pp *PersonhoodProofService) Analyze(ctx context.Context) error {
-	
+	_ = ctx
+	fmt.Println("Analyzing")
+	fmt.Println(pp.tg.GetUpdates())
+	fmt.Println("End of analyzing")
 	return nil
 }

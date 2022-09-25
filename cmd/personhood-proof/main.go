@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"personhood-proof/internal/client/cdn"
+	"personhood-proof/internal/client/telegram"
 	"personhood-proof/internal/repository/user"
 	personhood_proof "personhood-proof/internal/service/personhood-proof"
 
@@ -27,12 +28,14 @@ func main() {
 
 	db := sqlx.NewDb(sqlDb, "postgres")
 
-	interval := time.Minute
+	interval := time.Second
 
 	cdnMock := cdn.NewClient()
 
 	userRepository := user.NewUserRepository(db)
 
-	personhoodProofService := personhood_proof.NewPersonhoodProofService(db, cdnMock, userRepository)
+	tg := telegram.NewClient()
+
+	personhoodProofService := personhood_proof.NewPersonhoodProofService(db, cdnMock, tg, userRepository)
 	personhoodProofService.Start(ctx, interval)
 }

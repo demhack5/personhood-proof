@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"fmt"
 	"log"
 	"personhood-proof/internal/models/telegram"
 
@@ -21,7 +22,6 @@ type client struct {
 
 var _ Client = &client{}
 
-// mb use https://github.com/gotd/td ?
 func NewClient() Client {
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
@@ -40,6 +40,7 @@ func (c *client) SendMessage(msg *telegram.Message) error {
 }
 
 func (c *client) GetUpdates() (map[int64][]*telegram.Message, error) {
+	fmt.Println("GetUpdates runnning...")
 	ret := make(map[int64][]*telegram.Message)
 	u := tgbotapi.NewUpdate(c.offset)
 	updates, err := c.bot.GetUpdatesChan(u)
@@ -64,5 +65,6 @@ func (c *client) GetUpdates() (map[int64][]*telegram.Message, error) {
 			}
 		}
 	}
+	fmt.Println("GetUpdates finishing...")
 	return ret, nil
 }
