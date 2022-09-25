@@ -37,17 +37,20 @@ func (c *client) SendMessage(userID int64, txt string) error {
 }
 
 func (c *client) GetUpdates() (map[int64][]string, error) {
+	ret := make(map[int64][]string)
 	u := tgbotapi.NewUpdate(c.offset)
 	updates := c.bot.GetUpdatesChan(u)
 	for update := range updates {
 		if update.Message != nil { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-			msg.ReplyToMessageID = update.Message.MessageID
-
-			bot.Send(msg)
+			a, ok := ret[update.Message.From.User.ID]
+			if !ok {
+				ret[update.Message.From.User.ID] = make([]string, 0)
+				ret[update.Message.From.User.ID] = append(ret[update.Message.From.User.ID], update.Message.Text)
+			} else {
+				ret[update.Message.From.User.ID] = append(a, update.Message.Text)
+			}
 		}
 	}
-	return nil, nil
+	return ret, nil
 }
