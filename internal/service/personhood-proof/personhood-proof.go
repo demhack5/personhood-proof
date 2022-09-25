@@ -40,5 +40,6 @@ func (pp *PersonhoodProofService) Start(ctx context.Context, interval time.Durat
 }
 
 func (pp *PersonhoodProofService) Analyze(ctx context.Context) error {
+	
 	return nil
 }

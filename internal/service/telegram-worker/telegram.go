@@ -48,7 +48,6 @@ func (w *Worker) GetUpdates(ctx context.Context) (map[int64][]string, error) {
 }
 
 func (w *Worker) RecordUpdates(ctx context.Context, updates map[int64][]string) error {
-	_ = ctx
-	_ = updates
+	
 	return nil
 }

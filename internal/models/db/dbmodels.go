@@ -1,8 +1,8 @@
 package dbmodels
 
 type UserMessage struct {
-	Message string `db:"message"`
-	IsNew   bool   `db:"is_new"`
+	Text  string `db:"message"`
+	IsNew bool   `db:"is_new"`
 }
 
 type User struct {
