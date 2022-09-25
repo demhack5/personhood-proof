@@ -1,21 +1,29 @@
 package main
 
 import (
-	//"context"
 	"context"
 	"database/sql"
 	"log"
 	"time"
 
 	"personhood-proof/internal/client/cdn"
+	"personhood-proof/internal/pkg/app"
+	"personhood-proof/internal/repository/user"
 	personhood_proof "personhood-proof/internal/service/personhood-proof"
 
 	"github.com/jmoiron/sqlx"
+
+	_ "github.com/lib/pq"
 )
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	a, err := app.New()
+	if err != nil {
+		panic("can't create app")
+	}
 
 	sqlDb, err := sql.Open("postgres", "postgres://alsoalgo:@127.0.0.1:5432/personhood-proof?sslmode=disable&binary_parameters=yes")
 	if err != nil {
@@ -29,6 +37,12 @@ func main() {
 
 	cdnMock := cdn.NewClient()
 
-	personhoodProofService := personhood_proof.NewPersonhoodProofService(db, cdnMock)
-	defer personhoodProofService.Start(ctx, interval)
+	userRepository := user.NewUserRepository(db)
+
+	personhoodProofService := personhood_proof.NewPersonhoodProofService(db, cdnMock, userRepository)
+	personhoodProofService.Start(ctx, interval)
+
+	if err := a.Run(); err != nil {
+		panic("can't run app")
+	}
 }
