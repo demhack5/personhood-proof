@@ -2,20 +2,21 @@ package telegram
 
 import (
 	"log"
+	"personhood-proof/internal/models/telegram"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	tgbotapi "github.com/Syfaro/telegram-bot-api"
 )
 
 var token = ""
 
 type Client interface {
-	SendMessage(userID int64, messageText string) error
-	GetUpdates() (map[int64][]string, error)
+	SendMessage(msg *telegram.Message) error
+	GetUpdates() (map[int64][]*telegram.Message, error)
 }
 
 type client struct {
 	bot    *tgbotapi.BotAPI
-	offset int64
+	offset int
 }
 
 var _ Client = &client{}
@@ -32,23 +33,34 @@ func NewClient() Client {
 	}
 }
 
-func (c *client) SendMessage(userID int64, txt string) error {
+func (c *client) SendMessage(msg *telegram.Message) error {
+	m := tgbotapi.NewMessage(msg.ChatID, msg.Text)
+	c.bot.Send(m)
 	return nil
 }
 
-func (c *client) GetUpdates() (map[int64][]string, error) {
-	ret := make(map[int64][]string)
+func (c *client) GetUpdates() (map[int64][]*telegram.Message, error) {
+	ret := make(map[int64][]*telegram.Message)
 	u := tgbotapi.NewUpdate(c.offset)
-	updates := c.bot.GetUpdatesChan(u)
+	updates, err := c.bot.GetUpdatesChan(u)
+	if err != nil {
+		return nil, err
+	}
 	for update := range updates {
 		if update.Message != nil { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-			a, ok := ret[update.Message.From.User.ID]
+			a, ok := ret[int64(update.Message.From.ID)]
 			if !ok {
-				ret[update.Message.From.User.ID] = make([]string, 0)
-				ret[update.Message.From.User.ID] = append(ret[update.Message.From.User.ID], update.Message.Text)
+				ret[int64(update.Message.From.ID)] = make([]*telegram.Message, 0)
+				ret[int64(update.Message.From.ID)] = append(ret[int64(update.Message.From.ID)], &telegram.Message{
+					Text:   update.Message.Text,
+					ChatID: update.Message.Chat.ID,
+				})
 			} else {
-				ret[update.Message.From.User.ID] = append(a, update.Message.Text)
+				ret[int64(update.Message.From.ID)] = append(a, &telegram.Message{
+					Text:   update.Message.Text,
+					ChatID: update.Message.Chat.ID,
+				})
 			}
 		}
 	}
