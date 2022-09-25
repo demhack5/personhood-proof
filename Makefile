@@ -1,8 +1,8 @@
 LOCAL_BIN=$(CURDIR)/bin
 PROJECT_NAME=personhood-proof
 
-export GO111MODULE=auto
-GOENV:=GO111MODULE=auto
+export GO111MODULE=on
+GOENV:=GO111MODULE=on
 
 .PHONY: build
 build:
