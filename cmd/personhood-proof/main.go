@@ -5,12 +5,11 @@ import (
 	"context"
 	"database/sql"
 	"log"
-	"net/http"
 	"time"
 
+	"personhood-proof/internal/client/cdn"
 	personhood_proof "personhood-proof/internal/service/personhood-proof"
 
-	"github.com/go-chi/chi"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -26,16 +25,10 @@ func main() {
 
 	db := sqlx.NewDb(sqlDb, "postgres")
 
-	publicRouter := chi.NewRouter()
-
-	publicRouter.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("root."))
-	})
-
-	http.ListenAndServe(":3333", publicRouter)
-
 	interval := time.Minute
 
-	personhoodProofService := personhood_proof.NewPersonhoodProofService(db)
+	cdnMock := cdn.NewClient()
+
+	personhoodProofService := personhood_proof.NewPersonhoodProofService(db, cdnMock)
 	defer personhoodProofService.Start(ctx, interval)
 }

@@ -3,6 +3,7 @@ package personhood_proof
 import (
 	"context"
 	"fmt"
+	"personhood-proof/internal/client/cdn"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -12,7 +13,7 @@ type PersonhoodProofService struct {
 	db *sqlx.DB
 }
 
-func NewPersonhoodProofService(db *sqlx.DB) *PersonhoodProofService {
+func NewPersonhoodProofService(db *sqlx.DB, cdn cdn.Client) *PersonhoodProofService {
 	return &PersonhoodProofService{
 		db: db,
 	}
